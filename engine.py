@@ -59,7 +59,7 @@ class SGlangEngine:
         return not _is_disabled(self.preset)
 
     def _detect_deepseek_v4_hardware(self):
-        configured = os.getenv("DEEPSEEK_V4_HARDWARE", "auto").strip().lower()
+        configured = os.getenv("DEEPSEEK_V4_HARDWARE", "h200").strip().lower()
         if configured in ("h100", "h200"):
             return configured
 

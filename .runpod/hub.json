@@ -1,13 +1,13 @@
 {
   "title": "SGLang",
-  "description": "SGLang worker with a default DeepSeek-V4-Flash FP8 Hopper preset.",
+  "description": "SGLang worker with a default DeepSeek-V4-Flash FP8 preset for 4x H200 serverless deployments.",
   "type": "serverless",
   "category": "language",
   "iconUrl": "https://avatars.githubusercontent.com/u/147780389?v=4",
   "config": {
     "runsOn": "GPU",
     "containerDiskInGb": 400,
-    "gpuIds": "HOPPER_141,ADA_80_PRO",
+    "gpuIds": "HOPPER_141",
     "gpuCount": 4,
     "allowedCudaVersions": ["12.9", "12.8", "12.7", "12.6"],
     "env": [
@@ -30,13 +30,11 @@
         "input": {
           "name": "DeepSeek V4 Hardware",
           "type": "string",
-          "description": "Hardware target for the DeepSeek V4 FP8 preset. Auto detects H100/H200 at runtime.",
-          "default": "auto",
+          "description": "Hardware target for the DeepSeek V4 FP8 preset. This Hub template is H200-only.",
+          "default": "h200",
           "required": false,
           "options": [
-            { "value": "auto", "label": "Auto" },
-            { "value": "h200", "label": "H200" },
-            { "value": "h100", "label": "H100" }
+            { "value": "h200", "label": "H200" }
           ]
         }
       },

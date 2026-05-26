@@ -1,6 +1,6 @@
 ![SGLang worker banner](https://cpjrphpz3t5wbwfe.public.blob.vercel-storage.com/worker-sglang_banner-A9R2vQzvSUmLvqMZ8MzehfZtRDxHJR.jpeg)
 
-Run LLMs and VLMs using [SGLang](https://docs.sglang.ai). By default this worker starts a Hopper FP8 preset for [sgl-project/DeepSeek-V4-Flash-FP8](https://huggingface.co/sgl-project/DeepSeek-V4-Flash-FP8).
+Run LLMs and VLMs using [SGLang](https://docs.sglang.ai). By default this worker starts an H200-only FP8 preset for [sgl-project/DeepSeek-V4-Flash-FP8](https://huggingface.co/sgl-project/DeepSeek-V4-Flash-FP8).
 
 ---
 
@@ -15,7 +15,7 @@ All behaviour is controlled through environment variables:
 | Environment Variable              | Description                                       | Default                               | Options                                                                                   |
 | --------------------------------- | ------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `SGLANG_PRESET`                   | Launch preset                                     | "deepseek-v4-flash-fp8"               | "deepseek-v4-flash-fp8", "none"                                                           |
-| `DEEPSEEK_V4_HARDWARE`            | Hardware target for the DeepSeek V4 FP8 preset   | "auto"                                | "auto", "h200", "h100"                                                                    |
+| `DEEPSEEK_V4_HARDWARE`            | Hardware target for the DeepSeek V4 FP8 preset   | "h200"                                | "h200" in the RunPod Hub template                                                         |
 | `DEEPSEEK_V4_RECIPE`              | DeepSeek V4 serving recipe                        | "balanced"                            | "low-latency", "balanced", "max-throughput"                                               |
 | `MODEL_NAME`                      | Hugging Face model name or local path             | "sgl-project/DeepSeek-V4-Flash-FP8"   | Hugging Face repo ID or local folder path                                                 |
 | `HF_TOKEN`                        | HuggingFace access token for gated/private models |                                       | Your HuggingFace access token                                                             |
@@ -34,14 +34,14 @@ All behaviour is controlled through environment variables:
 | `MAX_PREFILL_TOKENS`              | Max tokens in prefill batch                       | 16384                                 |                                                                                           |
 | `SCHEDULE_POLICY`                 | Request scheduling policy                         | "fcfs"                                | "lpm", "random", "fcfs", "dfs-weight"                                                     |
 | `SCHEDULE_CONSERVATIVENESS`       | Conservativeness of schedule policy               | 1.0                                   |                                                                                           |
-| `TENSOR_PARALLEL_SIZE` / `TP`     | Tensor parallelism size                           | H200: 4, H100: 8 in preset            |                                                                                           |
+| `TENSOR_PARALLEL_SIZE` / `TP`     | Tensor parallelism size                           | H200: 4 in preset                     |                                                                                           |
 | `STREAM_INTERVAL`                 | Streaming interval in token length                | 1                                     |                                                                                           |
 | `RANDOM_SEED`                     | Random seed                                       |                                       |                                                                                           |
 | `LOG_LEVEL`                       | Logging level for all loggers                     | "info"                                |                                                                                           |
 | `LOG_LEVEL_HTTP`                  | Logging level for HTTP server                     |                                       |                                                                                           |
 | `API_KEY`                         | API key for the server                            |                                       |                                                                                           |
 | `FILE_STORAGE_PATH`               | Directory for storing uploaded/generated files    | "sglang_storage"                      |                                                                                           |
-| `DATA_PARALLEL_SIZE` / `DP`       | Data parallelism size                             | H200: 4, H100: 8 in balanced preset   |                                                                                           |
+| `DATA_PARALLEL_SIZE` / `DP`       | Data parallelism size                             | H200: 4 in balanced preset            |                                                                                           |
 | `MOE_A2A_BACKEND`                 | MoE all-to-all backend                            | "deepep" in balanced/max-throughput   | "deepep", "none"                                                                          |
 | `DEEPEP_CONFIG`                   | JSON passed to `--deepep-config`                  | DeepEP 96-SM config in preset         |                                                                                           |
 | `CUDA_GRAPH_MAX_BS`               | CUDA graph max batch size                         | H200 balanced: 128                    |                                                                                           |
@@ -67,15 +67,15 @@ All behaviour is controlled through environment variables:
 
 ## DeepSeek V4 Flash FP8 Preset
 
-The default `SGLANG_PRESET=deepseek-v4-flash-fp8` targets Hopper GPUs with the SGLang Docker image `lmsysorg/sglang:deepseek-v4-hopper`.
+The default `SGLANG_PRESET=deepseek-v4-flash-fp8` targets 4x H200 GPUs with the SGLang Docker image `lmsysorg/sglang:deepseek-v4-hopper`.
 
 - Model path: `sgl-project/DeepSeek-V4-Flash-FP8`
 - Served model name: `deepseek-ai/DeepSeek-V4-Flash`
 - Default recipe: `balanced`
 - Context length: `400000`
+- RunPod Hub GPU pool: `HOPPER_141`
+- RunPod Hub GPU count: `4`
 - H200 default: `--tp 4 --dp 4 --enable-dp-attention`
-- H100 default: `--tp 8 --dp 8 --enable-dp-attention`
-- RunPod Hub defaults to 4x H200. For H100, use 8 GPUs or override `TP`/`DP` to match your topology.
 - Tool parser: `deepseekv4`
 - Reasoning parser: `deepseek-v4`
 
