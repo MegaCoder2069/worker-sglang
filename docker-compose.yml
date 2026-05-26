@@ -14,6 +14,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=30000
+      - SGLANG_PRESET=none
       - MODEL_NAME=meta-llama/Llama-3.2-1B-Instruct
       - TRUST_REMOTE_CODE=true
       - ATTENTION_BACKEND=flashinfer
@@ -31,7 +32,7 @@ services:
       - CONTEXT_LENGTH=2048
 
     ports:
-      - "8000:8000"
+      - "30000:30000"
 
     volumes:
       - ../var/runpod-volume:/runpod-volume

@@ -1,6 +1,6 @@
 ![SGLang worker banner](https://cpjrphpz3t5wbwfe.public.blob.vercel-storage.com/worker-sglang_banner-A9R2vQzvSUmLvqMZ8MzehfZtRDxHJR.jpeg)
 
-Run LLMs and VLMs using [SGLang](https://docs.sglang.ai)
+Run LLMs and VLMs using [SGLang](https://docs.sglang.ai). By default this worker starts a Hopper FP8 preset for [sgl-project/DeepSeek-V4-Flash-FP8](https://huggingface.co/sgl-project/DeepSeek-V4-Flash-FP8).
 
 ---
 
@@ -14,15 +14,18 @@ All behaviour is controlled through environment variables:
 
 | Environment Variable              | Description                                       | Default                               | Options                                                                                   |
 | --------------------------------- | ------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `MODEL_NAME`                      | Hugging Face model name or local path             | "meta-llama/Meta-Llama-3-8B-Instruct" | Hugging Face repo ID or local folder path                                                 |
+| `SGLANG_PRESET`                   | Launch preset                                     | "deepseek-v4-flash-fp8"               | "deepseek-v4-flash-fp8", "none"                                                           |
+| `DEEPSEEK_V4_HARDWARE`            | Hardware target for the DeepSeek V4 FP8 preset   | "auto"                                | "auto", "h200", "h100"                                                                    |
+| `DEEPSEEK_V4_RECIPE`              | DeepSeek V4 serving recipe                        | "balanced"                            | "low-latency", "balanced", "max-throughput"                                               |
+| `MODEL_NAME`                      | Hugging Face model name or local path             | "sgl-project/DeepSeek-V4-Flash-FP8"   | Hugging Face repo ID or local folder path                                                 |
 | `HF_TOKEN`                        | HuggingFace access token for gated/private models |                                       | Your HuggingFace access token                                                             |
 | `TOKENIZER_PATH`                  | Path of the tokenizer                             |                                       |                                                                                           |
 | `TOKENIZER_MODE`                  | Tokenizer mode                                    | "auto"                                | "auto", "slow"                                                                            |
 | `LOAD_FORMAT`                     | Format of model weights to load                   | "auto"                                | "auto", "pt", "safetensors", "npcache", "dummy"                                           |
 | `DTYPE`                           | Data type for weights and activations             | "auto"                                | "auto", "half", "float16", "bfloat16", "float", "float32"                                 |
-| `CONTEXT_LENGTH`                  | Model's maximum context length                    |                                       |                                                                                           |
+| `CONTEXT_LENGTH`                  | Model's maximum context length                    | 400000 in preset                      |                                                                                           |
 | `QUANTIZATION`                    | Quantization method                               |                                       | "awq", "fp8", "gptq", "marlin", "gptq_marlin", "awq_marlin", "squeezellm", "bitsandbytes" |
-| `SERVED_MODEL_NAME`               | Override model name in API                        |                                       |                                                                                           |
+| `SERVED_MODEL_NAME`               | Override model name in API                        | "deepseek-ai/DeepSeek-V4-Flash"       |                                                                                           |
 | `CHAT_TEMPLATE`                   | Chat template name or path                        |                                       |                                                                                           |
 | `MEM_FRACTION_STATIC`             | Fraction of memory for static allocation          |                                       |                                                                                           |
 | `MAX_RUNNING_REQUESTS`            | Maximum number of running requests                |                                       |                                                                                           |
@@ -31,17 +34,24 @@ All behaviour is controlled through environment variables:
 | `MAX_PREFILL_TOKENS`              | Max tokens in prefill batch                       | 16384                                 |                                                                                           |
 | `SCHEDULE_POLICY`                 | Request scheduling policy                         | "fcfs"                                | "lpm", "random", "fcfs", "dfs-weight"                                                     |
 | `SCHEDULE_CONSERVATIVENESS`       | Conservativeness of schedule policy               | 1.0                                   |                                                                                           |
-| `TENSOR_PARALLEL_SIZE`            | Tensor parallelism size                           | 1                                     |                                                                                           |
+| `TENSOR_PARALLEL_SIZE` / `TP`     | Tensor parallelism size                           | H200: 4, H100: 8 in preset            |                                                                                           |
 | `STREAM_INTERVAL`                 | Streaming interval in token length                | 1                                     |                                                                                           |
 | `RANDOM_SEED`                     | Random seed                                       |                                       |                                                                                           |
 | `LOG_LEVEL`                       | Logging level for all loggers                     | "info"                                |                                                                                           |
 | `LOG_LEVEL_HTTP`                  | Logging level for HTTP server                     |                                       |                                                                                           |
 | `API_KEY`                         | API key for the server                            |                                       |                                                                                           |
 | `FILE_STORAGE_PATH`               | Directory for storing uploaded/generated files    | "sglang_storage"                      |                                                                                           |
-| `DATA_PARALLEL_SIZE`              | Data parallelism size                             | 1                                     |                                                                                           |
+| `DATA_PARALLEL_SIZE` / `DP`       | Data parallelism size                             | H200: 4, H100: 8 in balanced preset   |                                                                                           |
+| `MOE_A2A_BACKEND`                 | MoE all-to-all backend                            | "deepep" in balanced/max-throughput   | "deepep", "none"                                                                          |
+| `DEEPEP_CONFIG`                   | JSON passed to `--deepep-config`                  | DeepEP 96-SM config in preset         |                                                                                           |
+| `CUDA_GRAPH_MAX_BS`               | CUDA graph max batch size                         | H200 balanced: 128                    |                                                                                           |
+| `SPECULATIVE_ALGO`                | Speculative decoding algorithm                    | "EAGLE" in low-latency/balanced       | "EAGLE", "none"                                                                           |
+| `SPECULATIVE_NUM_STEPS`           | Speculative decoding steps                        | balanced: 1, low-latency: 3           |                                                                                           |
+| `SPECULATIVE_EAGLE_TOPK`          | EAGLE top-k                                       | 1                                     |                                                                                           |
+| `SPECULATIVE_NUM_DRAFT_TOKENS`    | Speculative draft tokens                          | balanced: 2, low-latency: 4           |                                                                                           |
 | `LOAD_BALANCE_METHOD`             | Load balancing strategy                           | "round_robin"                         | "round_robin", "shortest_queue"                                                           |
 | `SKIP_TOKENIZER_INIT`             | Skip tokenizer init                               | false                                 | boolean (true or false)                                                                   |
-| `TRUST_REMOTE_CODE`               | Allow custom models from Hub                      | false                                 | boolean (true or false)                                                                   |
+| `TRUST_REMOTE_CODE`               | Allow custom models from Hub                      | true in preset                        | boolean (true or false)                                                                   |
 | `LOG_REQUESTS`                    | Log inputs and outputs of requests                | false                                 | boolean (true or false)                                                                   |
 | `SHOW_TIME_COST`                  | Show time cost of custom marks                    | false                                 | boolean (true or false)                                                                   |
 | `DISABLE_RADIX_CACHE`             | Disable RadixAttention for prefix caching         | false                                 | boolean (true or false)                                                                   |
@@ -50,18 +60,35 @@ All behaviour is controlled through environment variables:
 | `ENABLE_TORCH_COMPILE`            | Optimize model with torch.compile                 | false                                 | boolean (true or false)                                                                   |
 | `ENABLE_P2P_CHECK`                | Enable P2P check for GPU access                   | false                                 | boolean (true or false)                                                                   |
 | `ENABLE_FLASHINFER_MLA`           | Enable FlashInfer MLA optimization                | false                                 | boolean (true or false)                                                                   |
+| `ENABLE_DP_ATTENTION`             | Enable data-parallel attention                    | true in balanced/max-throughput       | boolean (true or false)                                                                   |
 | `TRITON_ATTENTION_REDUCE_IN_FP32` | Cast Triton attention reduce op to FP32           | false                                 | boolean (true or false)                                                                   |
-| `TOOL_CALL_PARSER`                | Defines the parser used to interpret responses    |                                       | "llama3", "llama4", "mistral", "qwen25", "deepseekv3"                                     |
-| `REASONING_PARSER`                | Defines the parser used for reasoning traces      |                                       | "llama3", "llama4", "mistral", "qwen25", "deepseekv3"                                     |
+| `TOOL_CALL_PARSER`                | Defines the parser used to interpret responses    | "deepseekv4" in preset                | "llama3", "llama4", "mistral", "qwen25", "deepseekv3", "deepseekv4", "none"               |
+| `REASONING_PARSER`                | Defines the parser used for reasoning traces      | "deepseek-v4" in preset               | "llama3", "llama4", "mistral", "qwen25", "deepseekv3", "deepseek-v4", "none"              |
+
+## DeepSeek V4 Flash FP8 Preset
+
+The default `SGLANG_PRESET=deepseek-v4-flash-fp8` targets Hopper GPUs with the SGLang Docker image `lmsysorg/sglang:deepseek-v4-hopper`.
+
+- Model path: `sgl-project/DeepSeek-V4-Flash-FP8`
+- Served model name: `deepseek-ai/DeepSeek-V4-Flash`
+- Default recipe: `balanced`
+- Context length: `400000`
+- H200 default: `--tp 4 --dp 4 --enable-dp-attention`
+- H100 default: `--tp 8 --dp 8 --enable-dp-attention`
+- RunPod Hub defaults to 4x H200. For H100, use 8 GPUs or override `TP`/`DP` to match your topology.
+- Tool parser: `deepseekv4`
+- Reasoning parser: `deepseek-v4`
+
+Every preset value can be overridden with the matching environment variable. Set parser/backend options to `none` to suppress those flags, or set `SGLANG_PRESET=none` to run the generic SGLang worker configuration.
 
 ## Tool/Function Calling and Reasoning
 
-- **Tool/Function calling**: Set the `TOOL_CALL_PARSER` environment variable to match your model family. Supported values: `llama3`, `llama4`, `mistral`, `qwen25`, `deepseekv3`. If unset, this worker does not pass `--tool-call-parser` to SGLang.
+- **Tool/Function calling**: Set the `TOOL_CALL_PARSER` environment variable to match your model family. Supported values include `llama3`, `llama4`, `mistral`, `qwen25`, `deepseekv3`, and `deepseekv4`. In the DeepSeek V4 preset this defaults to `deepseekv4`; set it to `none` to suppress the flag.
 
   - Example (docker-compose): add `TOOL_CALL_PARSER=llama3` under `environment:`.
   - Example (RunPod Hub): set the `TOOL_CALL_PARSER` env var in the UI.
 
-- **Reasoning**: Set the `REASONING_PARSER` environment variable to match your model family if you want to enable reasoning traces parsing. If unset, this worker does not pass `--reasoning-parser` to SGLang.
+- **Reasoning**: Set the `REASONING_PARSER` environment variable to match your model family if you want to enable reasoning traces parsing. In the DeepSeek V4 preset this defaults to `deepseek-v4`; set it to `none` to suppress the flag.
   - Example (docker-compose): add `# REASONING_PARSER=llama3` under `environment:` (uncomment to use).
   - Example (RunPod Hub): set the `REASONING_PARSER` env var in the UI.
 
@@ -141,7 +168,7 @@ For external clients and SDKs, use the `/openai/v1` path prefix with your RunPod
 
 ```json
 {
-  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "model": "deepseek-ai/DeepSeek-V4-Flash",
   "messages": [
     { "role": "system", "content": "You are a helpful assistant." },
     { "role": "user", "content": "What is the capital of France?" }
@@ -155,7 +182,7 @@ For external clients and SDKs, use the `/openai/v1` path prefix with your RunPod
 
 ```json
 {
-  "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+  "model": "deepseek-ai/DeepSeek-V4-Flash",
   "messages": [
     { "role": "user", "content": "Write a short story about a robot." }
   ],
@@ -217,7 +244,7 @@ client = OpenAI(
 
 ```python
 response = client.chat.completions.create(
-    model="meta-llama/Meta-Llama-3-8B-Instruct",
+    model="deepseek-ai/DeepSeek-V4-Flash",
     messages=[{"role": "user", "content": "Give a two lines on Planet Earth ?"}],
     temperature=0,
     max_tokens=100,
@@ -230,7 +257,7 @@ print(f"Response: {response}")
 
 ```python
 response_stream = client.chat.completions.create(
-    model="meta-llama/Meta-Llama-3-8B-Instruct",
+    model="deepseek-ai/DeepSeek-V4-Flash",
     messages=[{"role": "user", "content": "Give a two lines on Planet Earth ?"}],
     temperature=0,
     max_tokens=100,

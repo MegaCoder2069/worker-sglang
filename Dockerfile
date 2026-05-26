@@ -1,4 +1,4 @@
-FROM lmsysorg/sglang:v0.5.2-cu126
+FROM lmsysorg/sglang:deepseek-v4-hopper
 
 # Install uv package manager
 RUN curl -Ls https://astral.sh/uv/install.sh | sh \
@@ -24,6 +24,7 @@ ARG BASE_PATH="/runpod-volume"
 ARG QUANTIZATION=""
 ARG MODEL_REVISION=""
 ARG TOKENIZER_REVISION=""
+ARG SGLANG_PRESET="deepseek-v4-flash-fp8"
 
 ENV MODEL_NAME=$MODEL_NAME \
     MODEL_REVISION=$MODEL_REVISION \
@@ -31,6 +32,9 @@ ENV MODEL_NAME=$MODEL_NAME \
     TOKENIZER_REVISION=$TOKENIZER_REVISION \
     BASE_PATH=$BASE_PATH \
     QUANTIZATION=$QUANTIZATION \
+    SGLANG_PRESET=$SGLANG_PRESET \
+    DEEPSEEK_V4_RECIPE=balanced \
+    DEEPSEEK_V4_HARDWARE=auto \
     HF_DATASETS_CACHE="${BASE_PATH}/huggingface-cache/datasets" \
     HUGGINGFACE_HUB_CACHE="${BASE_PATH}/huggingface-cache/hub" \
     HF_HOME="${BASE_PATH}/huggingface-cache/hub" \

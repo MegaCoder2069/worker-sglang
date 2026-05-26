@@ -16,6 +16,10 @@
     "gpuCount": 1,
     "env": [
       {
+        "key": "SGLANG_PRESET",
+        "value": "none"
+      },
+      {
         "key": "TRUST_REMOTE_CODE",
         "value": "true"
       },
