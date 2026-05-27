@@ -1,13 +1,32 @@
 import os
 import json
 import logging
-import glob
-from shutil import rmtree
-from huggingface_hub import snapshot_download
+from fnmatch import fnmatch
+from pathlib import Path
 
 BASE_DIR = "/"
-TOKENIZER_PATTERNS = [["*.json", "tokenizer*"]]
-MODEL_PATTERNS = [["*.safetensors"], ["*.bin"], ["*.pt"]]
+TOKENIZER_PATTERNS = ["*.json", "tokenizer*"]
+MODEL_PATTERNS = ["*.safetensors", "*.bin", "*.pt"]
+
+
+def _snapshot_root(file_path):
+    parts = Path(file_path).parts
+    if "snapshots" in parts:
+        index = parts.index("snapshots")
+        return str(Path(*parts[: index + 2]))
+    return str(Path(file_path).parent)
+
+
+def _matches(path, patterns):
+    return any(fnmatch(path, pattern) for pattern in patterns)
+
+
+def _download_patterns(type):
+    if type == "model":
+        return MODEL_PATTERNS + TOKENIZER_PATTERNS
+    if type == "tokenizer":
+        return TOKENIZER_PATTERNS
+    raise ValueError(f"Invalid type: {type}")
 
 
 def setup_env():
@@ -26,26 +45,36 @@ def setup_env():
         )
 
 
-def download(name, revision, type, cache_dir):
-    if type == "model":
-        pattern_sets = [
-            model_pattern + TOKENIZER_PATTERNS[0] for model_pattern in MODEL_PATTERNS
-        ]
-    elif type == "tokenizer":
-        pattern_sets = TOKENIZER_PATTERNS
-    else:
-        raise ValueError(f"Invalid type: {type}")
-    try:
-        for pattern_set in pattern_sets:
-            path = snapshot_download(
-                name, revision=revision, cache_dir=cache_dir, allow_patterns=pattern_set
-            )
-            for pattern in pattern_set:
-                if glob.glob(os.path.join(path, pattern)):
-                    logging.info(f"Successfully downloaded {pattern} model files.")
-                    return path
-    except ValueError:
-        raise ValueError(f"No patterns matching {pattern_sets} found for download.")
+def download(name, revision, type, cache_dir, list_files=None, download_file=None):
+    if list_files is None or download_file is None:
+        from huggingface_hub import HfApi, hf_hub_download
+        from huggingface_hub.utils import logging as hf_logging
+
+        hf_logging.set_verbosity_info()
+        api = HfApi()
+        list_files = list_files or api.list_repo_files
+        download_file = download_file or hf_hub_download
+
+    patterns = _download_patterns(type)
+    files = sorted(
+        path for path in list_files(name, revision=revision) if _matches(path, patterns)
+    )
+    if not files:
+        raise ValueError(f"No patterns matching {patterns} found for download.")
+
+    logging.info("Downloading %s files for %s from %s.", len(files), type, name)
+    snapshot_root = None
+    for index, filename in enumerate(files, start=1):
+        print(f"Downloading {type} file {index}/{len(files)}: {filename}", flush=True)
+        path = download_file(
+            repo_id=name,
+            filename=filename,
+            revision=revision,
+            cache_dir=cache_dir,
+        )
+        snapshot_root = _snapshot_root(path)
+
+    return snapshot_root
 
 
 if __name__ == "__main__":

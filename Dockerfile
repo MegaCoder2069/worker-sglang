@@ -51,7 +51,11 @@ ENV MODEL_NAME=$MODEL_NAME \
     HF_DATASETS_CACHE="${BASE_PATH}/huggingface-cache/datasets" \
     HUGGINGFACE_HUB_CACHE="${BASE_PATH}/huggingface-cache/hub" \
     HF_HOME="${BASE_PATH}/huggingface-cache/hub" \
-    HF_HUB_ENABLE_HF_TRANSFER=1
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    HF_HUB_DOWNLOAD_TIMEOUT=60 \
+    HF_HUB_VERBOSITY=info \
+    HF_XET_CHUNK_CACHE_SIZE_BYTES=0 \
+    PYTHONUNBUFFERED=1
 
 # The final RunPod image is built with the DeepSeek V4 Flash FP8 weights cached.
 # Set DOWNLOAD_MODEL=false for a lightweight image that downloads at runtime.
