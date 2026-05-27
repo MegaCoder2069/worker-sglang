@@ -25,7 +25,7 @@ def get_max_concurrency(default=300):
     return int(os.getenv("MAX_CONCURRENCY", default))
 
 
-async def async_handler(job):
+async def handler(job):
     """Handle the requests asynchronously."""
     job_input = job["input"]
 
@@ -86,7 +86,7 @@ async def async_handler(job):
 
 runpod.serverless.start(
     {
-        "handler": async_handler,
+        "handler": handler,
         "concurrency_modifier": get_max_concurrency,
         "return_aggregate_stream": True,
     }
