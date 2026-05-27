@@ -84,10 +84,4 @@ async def handler(job):
             }
 
 
-runpod.serverless.start(
-    {
-        "handler": handler,
-        "concurrency_modifier": get_max_concurrency,
-        "return_aggregate_stream": True,
-    }
-)
+runpod.serverless.start({"handler": handler, "concurrency_modifier": get_max_concurrency, "return_aggregate_stream": True})
