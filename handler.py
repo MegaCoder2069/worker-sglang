@@ -25,7 +25,7 @@ def get_max_concurrency(default=300):
     return int(os.getenv("MAX_CONCURRENCY", default))
 
 
-async def handler(job):
+def handler(job):
     """Handle the requests asynchronously."""
     job_input = job["input"]
 
