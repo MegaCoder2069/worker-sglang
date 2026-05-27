@@ -38,6 +38,18 @@
         "value": "deepseek-ai/DeepSeek-V4-Flash"
       },
       {
+        "key": "BASE_PATH",
+        "value": "/runpod-volume"
+      },
+      {
+        "key": "HF_HOME",
+        "value": "/runpod-volume/huggingface-cache/hub"
+      },
+      {
+        "key": "HUGGINGFACE_HUB_CACHE",
+        "value": "/runpod-volume/huggingface-cache/hub"
+      },
+      {
         "key": "CONTEXT_LENGTH",
         "value": "400000"
       },

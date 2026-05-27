@@ -85,6 +85,16 @@ The included `docker-compose.yml` uses the same H200-only DeepSeek V4 Flash FP8 
 
 The Dockerfile also sets the same runtime defaults, so a RunPod build that pulls this repository starts with `MODEL_NAME=sgl-project/DeepSeek-V4-Flash-FP8`, `SERVED_MODEL_NAME=deepseek-ai/DeepSeek-V4-Flash`, `CONTEXT_LENGTH=400000`, `TOOL_CALL_PARSER=deepseekv4`, and `REASONING_PARSER=deepseek-v4`. RunPod's GitHub build integration has an 80 GB image limit, so weights are downloaded into the configured cache at runtime by default. Set the build arg `DOWNLOAD_MODEL=true` only when building externally and pushing the image to a registry that can handle the baked model size.
 
+## Serverless Model Cache
+
+RunPod's documented Serverless pattern is to initialize the model once when the worker starts, outside the request handler, and to use a Network Volume mounted at `/runpod-volume` for persistent model cache. This worker follows that pattern: `handler.py` starts SGLang at module import, then each job only forwards requests to the already-running SGLang server.
+
+For production, attach a Network Volume in the same datacenter as the H200 endpoint and size it for the DeepSeek V4 Flash FP8 weights. The template defaults cache paths to `/runpod-volume/huggingface-cache/hub` through `HF_HOME` and `HUGGINGFACE_HUB_CACHE`.
+
+- Warm worker: model is already loaded; requests do not download or reload weights.
+- Cold start with Network Volume: SGLang reuses the cached weights from `/runpod-volume`.
+- Cold start without Network Volume: weights are downloaded into the worker's ephemeral container disk and must be downloaded again for a new worker.
+
 ## Tool/Function Calling and Reasoning
 
 - **Tool/Function calling**: Set the `TOOL_CALL_PARSER` environment variable to match your model family. Supported values include `llama3`, `llama4`, `mistral`, `qwen25`, `deepseekv3`, and `deepseekv4`. In the DeepSeek V4 preset this defaults to `deepseekv4`; set it to `none` to suppress the flag.

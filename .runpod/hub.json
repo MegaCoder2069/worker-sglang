@@ -64,6 +64,39 @@
         }
       },
       {
+        "key": "BASE_PATH",
+        "input": {
+          "name": "Persistent Cache Base Path",
+          "type": "string",
+          "description": "Base path for model caches. On RunPod Serverless attach a Network Volume mounted at /runpod-volume so model weights persist across worker restarts.",
+          "default": "/runpod-volume",
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
+        "key": "HF_HOME",
+        "input": {
+          "name": "Hugging Face Cache",
+          "type": "string",
+          "description": "Hugging Face cache directory. Keep this on /runpod-volume to avoid re-downloading weights on each cold start.",
+          "default": "/runpod-volume/huggingface-cache/hub",
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
+        "key": "HUGGINGFACE_HUB_CACHE",
+        "input": {
+          "name": "Hugging Face Hub Cache",
+          "type": "string",
+          "description": "Hub cache directory used by SGLang/Hugging Face downloads.",
+          "default": "/runpod-volume/huggingface-cache/hub",
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
         "key": "SGLANG_DSV4_FP4_EXPERTS",
         "input": {
           "name": "DeepSeek V4 FP4 Experts",

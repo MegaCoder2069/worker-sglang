@@ -16,6 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # copy source files
 COPY handler.py engine.py utils.py download_model.py test_input.json ./
 COPY public/ ./public/
+RUN mkdir -p /runpod-volume/huggingface-cache/hub
 
 # Runtime defaults for the H200 DeepSeek V4 Flash FP8 deployment.
 ARG MODEL_NAME="sgl-project/DeepSeek-V4-Flash-FP8"
