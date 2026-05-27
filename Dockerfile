@@ -30,7 +30,7 @@ ARG QUANTIZATION=""
 ARG MODEL_REVISION=""
 ARG TOKENIZER_REVISION=""
 ARG SGLANG_PRESET="deepseek-v4-flash-fp8"
-ARG DOWNLOAD_MODEL="false"
+ARG DOWNLOAD_MODEL="true"
 
 ENV MODEL_NAME=$MODEL_NAME \
     SERVED_MODEL_NAME=$SERVED_MODEL_NAME \
@@ -53,8 +53,8 @@ ENV MODEL_NAME=$MODEL_NAME \
     HF_HOME="${BASE_PATH}/huggingface-cache/hub" \
     HF_HUB_ENABLE_HF_TRANSFER=1
 
-# Set DOWNLOAD_MODEL=true to bake the model into the image. The default keeps the
-# final image registry-friendly and downloads weights at runtime/cache volume.
+# The final RunPod image is built with the DeepSeek V4 Flash FP8 weights cached.
+# Set DOWNLOAD_MODEL=false for a lightweight image that downloads at runtime.
 RUN --mount=type=secret,id=HF_TOKEN,required=false \
     if [ -f /run/secrets/HF_TOKEN ]; then \
         export HF_TOKEN=$(cat /run/secrets/HF_TOKEN); \
