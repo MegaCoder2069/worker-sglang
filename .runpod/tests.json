@@ -50,6 +50,58 @@
         "value": "deepseek-v4"
       },
       {
+        "key": "TP",
+        "value": "4"
+      },
+      {
+        "key": "DP",
+        "value": "4"
+      },
+      {
+        "key": "ENABLE_DP_ATTENTION",
+        "value": "true"
+      },
+      {
+        "key": "MOE_A2A_BACKEND",
+        "value": "deepep"
+      },
+      {
+        "key": "SPECULATIVE_ALGO",
+        "value": "EAGLE"
+      },
+      {
+        "key": "SPECULATIVE_NUM_STEPS",
+        "value": "1"
+      },
+      {
+        "key": "SPECULATIVE_EAGLE_TOPK",
+        "value": "1"
+      },
+      {
+        "key": "SPECULATIVE_NUM_DRAFT_TOKENS",
+        "value": "2"
+      },
+      {
+        "key": "CUDA_GRAPH_MAX_BS",
+        "value": "128"
+      },
+      {
+        "key": "MAX_RUNNING_REQUESTS",
+        "value": "128"
+      },
+      {
+        "key": "DEEPEP_CONFIG",
+        "value": "{\"normal_dispatch\":{\"num_sms\":96},\"normal_combine\":{\"num_sms\":96}}"
+      },
+      {
+        "key": "SGLANG_DSV4_FP4_EXPERTS",
+        "value": "0"
+      },
+      {
+        "key": "SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK",
+        "value": "256"
+      },
+      {
         "key": "TRUST_REMOTE_CODE",
         "value": "true"
       }

@@ -83,6 +83,8 @@ Every preset value can be overridden with the matching environment variable. Set
 
 The included `docker-compose.yml` uses the same H200-only DeepSeek V4 Flash FP8 defaults as the RunPod Hub template and expects 4 H200 GPUs.
 
+The Dockerfile also sets the same runtime defaults, so a RunPod build that pulls this repository starts with `MODEL_NAME=sgl-project/DeepSeek-V4-Flash-FP8`, `SERVED_MODEL_NAME=deepseek-ai/DeepSeek-V4-Flash`, `CONTEXT_LENGTH=400000`, `TOOL_CALL_PARSER=deepseekv4`, and `REASONING_PARSER=deepseek-v4`. Weights are not baked into the image unless `DOWNLOAD_MODEL=true` is passed as a Docker build arg.
+
 ## Tool/Function Calling and Reasoning
 
 - **Tool/Function calling**: Set the `TOOL_CALL_PARSER` environment variable to match your model family. Supported values include `llama3`, `llama4`, `mistral`, `qwen25`, `deepseekv3`, and `deepseekv4`. In the DeepSeek V4 preset this defaults to `deepseekv4`; set it to `none` to suppress the flag.

@@ -64,6 +64,28 @@
         }
       },
       {
+        "key": "SGLANG_DSV4_FP4_EXPERTS",
+        "input": {
+          "name": "DeepSeek V4 FP4 Experts",
+          "type": "string",
+          "description": "H200 FP8 preset environment flag. Keep 0 for sgl-project DeepSeek V4 FP8 weights.",
+          "default": "0",
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
+        "key": "SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK",
+        "input": {
+          "name": "DeepEP Dispatch Tokens per Rank",
+          "type": "number",
+          "description": "DeepEP dispatch buffer cap. Balanced H200 FP8 uses 256.",
+          "default": 256,
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
         "key": "TOOL_CALL_PARSER",
         "input": {
           "name": "Tool Call Parser",
@@ -202,7 +224,7 @@
           "name": "Served Model Name",
           "type": "string",
           "description": "Override model name in API",
-          "default": "",
+          "default": "deepseek-ai/DeepSeek-V4-Flash",
           "required": false,
           "advanced": true
         }
@@ -506,7 +528,7 @@
           "name": "Trust Remote Code",
           "type": "boolean",
           "description": "Allow custom models from Hub",
-          "default": false,
+          "default": true,
           "required": false,
           "advanced": true
         }
@@ -605,7 +627,7 @@
           "name": "Enable DP Attention",
           "type": "boolean",
           "description": "Enable data-parallel attention.",
-          "default": false,
+          "default": true,
           "required": false,
           "advanced": true
         }
