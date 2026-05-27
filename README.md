@@ -81,15 +81,17 @@ The default `SGLANG_PRESET=deepseek-v4-flash-fp8` targets 4x H200 GPUs with the 
 
 Every preset value can be overridden with the matching environment variable. Set parser/backend options to `none` to suppress those flags, or set `SGLANG_PRESET=none` to run the generic SGLang worker configuration.
 
+The included `docker-compose.yml` uses the same H200-only DeepSeek V4 Flash FP8 defaults as the RunPod Hub template and expects 4 H200 GPUs.
+
 ## Tool/Function Calling and Reasoning
 
 - **Tool/Function calling**: Set the `TOOL_CALL_PARSER` environment variable to match your model family. Supported values include `llama3`, `llama4`, `mistral`, `qwen25`, `deepseekv3`, and `deepseekv4`. In the DeepSeek V4 preset this defaults to `deepseekv4`; set it to `none` to suppress the flag.
 
-  - Example (docker-compose): add `TOOL_CALL_PARSER=llama3` under `environment:`.
+  - Example (docker-compose): set `TOOL_CALL_PARSER=deepseekv4` under `environment:`.
   - Example (RunPod Hub): set the `TOOL_CALL_PARSER` env var in the UI.
 
 - **Reasoning**: Set the `REASONING_PARSER` environment variable to match your model family if you want to enable reasoning traces parsing. In the DeepSeek V4 preset this defaults to `deepseek-v4`; set it to `none` to suppress the flag.
-  - Example (docker-compose): add `# REASONING_PARSER=llama3` under `environment:` (uncomment to use).
+  - Example (docker-compose): set `REASONING_PARSER=deepseek-v4` under `environment:`.
   - Example (RunPod Hub): set the `REASONING_PARSER` env var in the UI.
 
 ## API Usage

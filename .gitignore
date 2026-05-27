@@ -3,3 +3,5 @@
 .DS_Store
 /tests
 /runpod serverless logs/
+__pycache__/
+*.pyc
