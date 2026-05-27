@@ -30,7 +30,7 @@ ARG QUANTIZATION=""
 ARG MODEL_REVISION=""
 ARG TOKENIZER_REVISION=""
 ARG SGLANG_PRESET="deepseek-v4-flash-fp8"
-ARG DOWNLOAD_MODEL="true"
+ARG DOWNLOAD_MODEL="false"
 
 ENV MODEL_NAME=$MODEL_NAME \
     SERVED_MODEL_NAME=$SERVED_MODEL_NAME \
@@ -57,8 +57,9 @@ ENV MODEL_NAME=$MODEL_NAME \
     HF_XET_CHUNK_CACHE_SIZE_BYTES=0 \
     PYTHONUNBUFFERED=1
 
-# The final RunPod image is built with the DeepSeek V4 Flash FP8 weights cached.
-# Set DOWNLOAD_MODEL=false for a lightweight image that downloads at runtime.
+# RunPod's GitHub build integration has an image-size cap, so the default keeps
+# the image lightweight and downloads weights into the configured cache at runtime.
+# Set DOWNLOAD_MODEL=true only when building externally and pushing to a registry.
 RUN --mount=type=secret,id=HF_TOKEN,required=false \
     if [ -f /run/secrets/HF_TOKEN ]; then \
         export HF_TOKEN=$(cat /run/secrets/HF_TOKEN); \
