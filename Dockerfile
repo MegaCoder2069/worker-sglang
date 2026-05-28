@@ -1,4 +1,6 @@
-FROM lmsysorg/sglang:deepseek-v4-hopper
+# Pin the linux/amd64 manifest directly. The tag also publishes an OCI index with
+# an attestation manifest, and RunPod's cache exporter has failed on that path.
+FROM --platform=linux/amd64 lmsysorg/sglang@sha256:d1b68460bf28412797005e79acdc3011f06663e5f820e0adf5dcc30214e12293
 
 # Install uv package manager
 RUN curl -Ls https://astral.sh/uv/install.sh | sh \
@@ -10,8 +12,7 @@ WORKDIR /sgl-workspace
 
 # install dependencies
 COPY requirements.txt ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system --break-system-packages -r requirements.txt
+RUN uv pip install --system --break-system-packages -r requirements.txt
 
 # copy source files
 COPY handler.py engine.py utils.py download_model.py test_input.json ./
@@ -31,7 +32,6 @@ ARG QUANTIZATION=""
 ARG MODEL_REVISION=""
 ARG TOKENIZER_REVISION=""
 ARG SGLANG_PRESET="deepseek-v4-flash-fp8"
-ARG DOWNLOAD_MODEL="false"
 
 ENV MODEL_NAME=$MODEL_NAME \
     SERVED_MODEL_NAME=$SERVED_MODEL_NAME \
@@ -57,16 +57,5 @@ ENV MODEL_NAME=$MODEL_NAME \
     HF_HUB_VERBOSITY=info \
     HF_XET_CHUNK_CACHE_SIZE_BYTES=0 \
     PYTHONUNBUFFERED=1
-
-# RunPod's GitHub build integration has an image-size cap, so the default keeps
-# the image lightweight and downloads weights into the configured cache at runtime.
-# Set DOWNLOAD_MODEL=true only when building externally and pushing to a registry.
-RUN --mount=type=secret,id=HF_TOKEN,required=false \
-    if [ -f /run/secrets/HF_TOKEN ]; then \
-        export HF_TOKEN=$(cat /run/secrets/HF_TOKEN); \
-    fi && \
-    if [ "$DOWNLOAD_MODEL" = "true" ] && [ -n "$MODEL_NAME" ]; then \
-        python3 download_model.py; \
-    fi
 
 CMD ["python3", "handler.py"]

@@ -13,6 +13,7 @@ tests/
 tmp/
 temp/
 logs/
+runpod serverless logs/
 *.log
 
 *.safetensors

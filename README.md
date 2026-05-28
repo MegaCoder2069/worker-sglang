@@ -83,7 +83,7 @@ Every preset value can be overridden with the matching environment variable. Set
 
 The included `docker-compose.yml` uses the same H200-only DeepSeek V4 Flash FP8 defaults as the RunPod Hub template and expects 4 H200 GPUs.
 
-The Dockerfile also sets the same runtime defaults, so a RunPod build that pulls this repository starts with `MODEL_NAME=sgl-project/DeepSeek-V4-Flash-FP8`, `SERVED_MODEL_NAME=deepseek-ai/DeepSeek-V4-Flash`, `CONTEXT_LENGTH=400000`, `TOOL_CALL_PARSER=deepseekv4`, and `REASONING_PARSER=deepseek-v4`. RunPod's GitHub build integration has an 80 GB image limit, so weights are downloaded into the configured cache at runtime by default. Set the build arg `DOWNLOAD_MODEL=true` only when building externally and pushing the image to a registry that can handle the baked model size.
+The Dockerfile also sets the same runtime defaults, so a RunPod build that pulls this repository starts with `MODEL_NAME=sgl-project/DeepSeek-V4-Flash-FP8`, `SERVED_MODEL_NAME=deepseek-ai/DeepSeek-V4-Flash`, `CONTEXT_LENGTH=400000`, `TOOL_CALL_PARSER=deepseekv4`, and `REASONING_PARSER=deepseek-v4`. RunPod's GitHub build integration has an 80 GB image limit, so this Dockerfile does not bake model weights into the image; weights are downloaded into the configured cache at runtime.
 
 ## Serverless Model Cache
 
