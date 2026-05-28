@@ -31,6 +31,16 @@ def _configured_value(name):
     return value
 
 
+def _configured_int(name, default):
+    value = os.getenv(name)
+    if value in (None, ""):
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 class SGlangEngine:
     def __init__(
         self,
@@ -47,7 +57,12 @@ class SGlangEngine:
         )
         self.host = host or os.getenv("HOST", "0.0.0.0")
         self.port = int(port or os.getenv("PORT", 30000))
-        self.base_url = f"http://{self.host}:{self.port}"
+        self.bind_url = f"http://{self.host}:{self.port}"
+        self.client_host = os.getenv(
+            "SGLANG_CLIENT_HOST",
+            "127.0.0.1" if self.host in ("0.0.0.0", "::") else self.host,
+        )
+        self.base_url = f"http://{self.client_host}:{self.port}"
         self.process = None
 
     def _preset_served_model(self):
@@ -261,17 +276,24 @@ class SGlangEngine:
 
     def start_server(self):
         command = self.build_command()
-        print(f"Starting SGLang with command: {' '.join(command)}")
+        print(f"Starting SGLang with command: {' '.join(command)}", flush=True)
         self.process = subprocess.Popen(command, stdout=None, stderr=None)
-        print(f"Server started with PID: {self.process.pid}")
+        print(f"Server started with PID: {self.process.pid}", flush=True)
 
-    def wait_for_server(self, timeout=900, interval=5):
+    def wait_for_server(self, timeout=None, interval=None):
+        timeout = timeout if timeout is not None else _configured_int("SERVER_START_TIMEOUT", 3600)
+        interval = interval if interval is not None else _configured_int("SERVER_READY_INTERVAL", 5)
         start_time = time.time()
         while time.time() - start_time < timeout:
+            if self.process and self.process.poll() is not None:
+                raise RuntimeError(
+                    f"SGLang server exited before readiness check passed "
+                    f"(exit code {self.process.returncode})."
+                )
             try:
                 response = requests.get(f"{self.base_url}/v1/models")
                 if response.status_code == 200:
-                    print("Server is ready!")
+                    print("Server is ready!", flush=True)
                     return True
             except requests.RequestException:
                 pass

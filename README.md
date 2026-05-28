@@ -64,6 +64,8 @@ All behaviour is controlled through environment variables:
 | `TRITON_ATTENTION_REDUCE_IN_FP32` | Cast Triton attention reduce op to FP32           | false                                 | boolean (true or false)                                                                   |
 | `TOOL_CALL_PARSER`                | Defines the parser used to interpret responses    | "deepseekv4" in preset                | "llama3", "llama4", "mistral", "qwen25", "deepseekv3", "deepseekv4", "none"               |
 | `REASONING_PARSER`                | Defines the parser used for reasoning traces      | "deepseek-v4" in preset               | "llama3", "llama4", "mistral", "qwen25", "deepseekv3", "deepseek-v4", "none"              |
+| `SERVER_START_TIMEOUT`            | Seconds to wait for SGLang readiness              | 3600                                  | Increase for first cold start while weights download/load                                  |
+| `SERVER_READY_INTERVAL`           | Seconds between SGLang readiness checks           | 5                                     |                                                                                           |
 
 ## DeepSeek V4 Flash FP8 Preset
 
@@ -94,6 +96,7 @@ For production, attach a Network Volume in the same datacenter as the H200 endpo
 - Warm worker: model is already loaded; requests do not download or reload weights.
 - Cold start with Network Volume: SGLang reuses the cached weights from `/runpod-volume`.
 - Cold start without Network Volume: weights are downloaded into the worker's ephemeral container disk and must be downloaded again for a new worker.
+- First cold starts can exceed the default 15-minute readiness window for very large weights, so the template sets `SERVER_START_TIMEOUT=3600`.
 
 ## Tool/Function Calling and Reasoning
 

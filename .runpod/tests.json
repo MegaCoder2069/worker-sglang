@@ -10,7 +10,7 @@
         "max_tokens": 32,
         "temperature": 0
       },
-      "timeout": 1200000
+      "timeout": 3900000
     }
   ],
   "config": {
@@ -48,6 +48,14 @@
       {
         "key": "HUGGINGFACE_HUB_CACHE",
         "value": "/runpod-volume/huggingface-cache/hub"
+      },
+      {
+        "key": "SERVER_START_TIMEOUT",
+        "value": "3600"
+      },
+      {
+        "key": "SERVER_READY_INTERVAL",
+        "value": "5"
       },
       {
         "key": "CONTEXT_LENGTH",

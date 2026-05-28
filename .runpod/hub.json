@@ -97,6 +97,28 @@
         }
       },
       {
+        "key": "SERVER_START_TIMEOUT",
+        "input": {
+          "name": "Server Start Timeout",
+          "type": "number",
+          "description": "Seconds to wait for SGLang readiness. DeepSeek V4 cold starts can take a long time while weights download/load.",
+          "default": 3600,
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
+        "key": "SERVER_READY_INTERVAL",
+        "input": {
+          "name": "Server Ready Interval",
+          "type": "number",
+          "description": "Seconds between readiness checks while SGLang starts.",
+          "default": 5,
+          "required": false,
+          "advanced": true
+        }
+      },
+      {
         "key": "SGLANG_DSV4_FP4_EXPERTS",
         "input": {
           "name": "DeepSeek V4 FP4 Experts",
