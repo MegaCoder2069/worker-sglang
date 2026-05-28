@@ -14,7 +14,7 @@
     }
   ],
   "config": {
-    "gpuTypeId": "HOPPER_141",
+    "gpuTypeId": "NVIDIA H200",
     "gpuCount": 4,
     "env": [
       {
